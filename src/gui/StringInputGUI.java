@@ -17,9 +17,9 @@ public class StringInputGUI extends JFrame {
 
     public StringInputGUI() {
         setTitle("String Input GUI");
-        setSize(300, 200);
+        setSize(400, 200);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLayout(new GridLayout(4, 2));
+        setLayout(new GridLayout(5, 2, 10, 10)); // Adding some spacing between components
 
         JLabel string1Label = new JLabel("String 1:");
         string1Field = new JTextField();
@@ -31,7 +31,6 @@ public class StringInputGUI extends JFrame {
         add(string2Label);
         add(string2Field);
 
-        // Adding a dropdown ith some options
         JLabel dropdownLabel = new JLabel("Select Option:");
         String[] options = { "UCS", "A*", "GBFS" };
         dropdown = new JComboBox<>(options);
