@@ -1,8 +1,14 @@
 package gui;
 
 import javax.swing.*;
-import java.awt.*;
+
+import utilities.UCSSolver;
+import utilities.AStarSolver;
+import utilities.GBFSSolver;
+
+import java.awt.GridLayout;
 import java.awt.event.*;
+import java.util.*;
 
 public class StringInputGUI extends JFrame {
     private JTextField string1Field, string2Field;
@@ -41,12 +47,68 @@ public class StringInputGUI extends JFrame {
                 String str2 = string2Field.getText();
                 String selectedOption = (String) dropdown.getSelectedItem();
 
+                str1.toLowerCase();
+                str2.toLowerCase();
+
                 if (str1.length() != str2.length()) {
                     JOptionPane.showMessageDialog(null, "Strings must have the same length!");
                 } else {
-                    // Print something or perform any action you want here
-                    System.out.println("Strings submitted successfully!");
-                    System.out.println("Selected Option: " + selectedOption);
+                    Set<String> wordList = utilities.FileReader.readStringsFromFile("./words.txt");
+                    if (selectedOption == "UCS") {
+                        // call ucs algo
+                        long startTime = System.nanoTime();
+                        
+                        UCSSolver solver = new UCSSolver();
+                        List<String> ladder = solver.findShortestLadder(str1, str2, wordList);
+                        
+                        long endTime = System.nanoTime();
+                        long duration = (endTime - startTime) / 1000000; 
+                        if (ladder != null) {
+                            JOptionPane.showMessageDialog(null,"Shortest ladder: " + ladder);
+                        }else{
+                            JOptionPane.showMessageDialog(null,"not found dude");
+                        }
+
+                        JOptionPane.showMessageDialog(null,"Visited nodes count: " + solver.getVisitedNodesCount());
+                        JOptionPane.showMessageDialog(null,"Time execution: " + duration +" ms");
+                    } else if (selectedOption == "A*") {
+                        // call A* algo
+                        long startTime = System.nanoTime();
+                        
+                        AStarSolver solver = new AStarSolver();
+                        List<String> ladder = solver.findShortestLadder(str1, str2, wordList);
+                        
+                        long endTime = System.nanoTime();
+                        long duration = (endTime - startTime) / 1000000; 
+                        if (ladder != null) {
+                            JOptionPane.showMessageDialog(null,"Shortest ladder: " + ladder);
+                        }else{
+                            JOptionPane.showMessageDialog(null,"not found dude");
+                        }
+
+                        JOptionPane.showMessageDialog(null,"Visited nodes count: " + solver.getVisitedNodesCount());
+                        JOptionPane.showMessageDialog(null,"Time execution: " + duration +" ms");
+                    } else if (selectedOption == "GBFS") {
+                        // call GBFS * algo
+                        long startTime = System.nanoTime();
+                        
+                        GBFSSolver solver = new GBFSSolver();
+                        List<String> ladder = solver.findShortestLadder(str1, str2, wordList);
+                        
+                        long endTime = System.nanoTime();
+                        long duration = (endTime - startTime) / 1000000; 
+                        if (ladder != null) {
+                            JOptionPane.showMessageDialog(null,"Shortest ladder: " + ladder);
+                        }else{
+                            JOptionPane.showMessageDialog(null,"not found dude");
+                        }
+                        
+                        JOptionPane.showMessageDialog(null,"Visited nodes count: " + solver.getVisitedNodesCount());
+                        JOptionPane.showMessageDialog(null,"Time execution: " + duration +" ms");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "selectnya diisi dl oy");
+                    }
+
                 }
             }
         });

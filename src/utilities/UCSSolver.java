@@ -94,13 +94,13 @@ public class UCSSolver {
     }
 
     // Main
-    public static void main(String[] args) {
-        Set<String> wordList = FileReader.readStringsFromFile("./words.txt");
-        UCSSolver solver = new UCSSolver();
-        List<String> ladder = solver.findShortestLadder("east", "love", wordList);
-        if (ladder != null) {
-            System.out.println("Shortest ladder: " + ladder);
-            System.out.println("Visited nodes count: " + solver.getVisitedNodesCount());
-        }
-    }
+    // public static void main(String[] args) {
+    // Set<String> wordList = FileReader.readStringsFromFile("./words.txt");
+    // UCSSolver solver = new UCSSolver();
+    // List<String> ladder = solver.findShortestLadder("hello", "check", wordList);
+    // if (ladder != null) {
+    // System.out.println("Shortest ladder: " + ladder);
+    // System.out.println("Visited nodes count: " + solver.getVisitedNodesCount());
+    // }
+    // }
 }
