@@ -21,16 +21,21 @@ public class GBFSSolver {
         Runtime runtime = Runtime.getRuntime();
         long beforeMemory, afterMemory;
 
+        // cek apakah start dan target ada di kamus tidak
         if (!wordList.contains(start) || !wordList.contains(end)) {
             System.out.println("Start or end word is not in the word list.");
             return null;
         }
 
+        // untuk pengecekan memory (kondisi memori awall)
         runtime.gc();
         beforeMemory = runtime.totalMemory() - runtime.freeMemory();
+
+        // deklarasi queue
         PriorityQueue<Node> queue = new PriorityQueue<>();
         queue.add(new Node(start, null, calculateHeuristic(start, end)));
 
+        // untuk menyimpan text yang pernah dikunjungi
         Set<String> visited = new HashSet<>();
         visited.add(start);
 
@@ -39,12 +44,17 @@ public class GBFSSolver {
             visitedNodesCount++;
 
             if (current.word.equals(end)) {
+                // saat ketemu stop, dan hitung memory kondisi akhir
                 runtime.gc();
                 afterMemory = runtime.totalMemory() - runtime.freeMemory();
                 usedMemory = afterMemory - beforeMemory;
+
+                // return berupa list dari hasil construct ladder
                 return reconstructLadder(current);
             }
 
+            // pengecekan hasil neighbour jika blm pernah di
+            // cek maka masuk ke queue
             for (String neighbor : getNeighbors(current.word, wordList)) {
                 if (!visited.contains(neighbor)) {
                     visited.add(neighbor);
@@ -52,6 +62,8 @@ public class GBFSSolver {
                 }
             }
         }
+
+        // hitung kondisi memory akhir (jika tidak ketemu solusi)
         runtime.gc();
         afterMemory = runtime.totalMemory() - runtime.freeMemory();
         usedMemory = afterMemory - beforeMemory;
@@ -60,6 +72,7 @@ public class GBFSSolver {
     }
 
     private int calculateHeuristic(String word, String target) {
+        // hitung jml char yang beda
         int distance = 0;
         for (int i = 0; i < word.length(); i++) {
             if (word.charAt(i) != target.charAt(i)) {
@@ -70,6 +83,7 @@ public class GBFSSolver {
     }
 
     private List<String> getNeighbors(String word, Set<String> wordList) {
+        // mencari semua list text yang beda 1 char dengan word saat itu
         List<String> neighbors = new ArrayList<>();
         char[] chars = word.toCharArray();
         for (int i = 0; i < word.length(); i++) {
@@ -89,6 +103,7 @@ public class GBFSSolver {
     }
 
     private List<String> reconstructLadder(Node endNode) {
+        // membangun ladder dengan iterasi dari target manggil parent sampe ke start
         LinkedList<String> ladder = new LinkedList<>();
         for (Node current = endNode; current != null; current = current.parent) {
             ladder.addFirst(current.word);
@@ -113,13 +128,4 @@ public class GBFSSolver {
         }
     }
 
-    // public static void main(String[] args) {
-    // Set<String> wordList = FileReader.readStringsFromFile("./words.txt");
-    // GBFSSolver solver = new GBFSSolver();
-    // List<String> ladder = solver.findShortestLadder("hello", "check", wordList);
-    // if (ladder != null) {
-    // System.out.println("Shortest ladder: " + ladder);
-    // System.out.println("Visited nodes count: " + solver.getVisitedNodesCount());
-    // }
-    // }
 }

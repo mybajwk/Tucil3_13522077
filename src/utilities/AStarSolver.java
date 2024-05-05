@@ -17,19 +17,25 @@ public class AStarSolver {
 
     public List<String> findShortestLadder(String start, String end, Set<String> wordList) {
         visitedNodesCount = 1;
+        usedMemory = 0;
         Runtime runtime = Runtime.getRuntime();
         long beforeMemory, afterMemory;
-        // Check
+
+        // cek apakah start dan target ada di kamus tidak
         if (!wordList.contains(start) || !wordList.contains(end)) {
             System.out.println("Start or end word is not in the word list.");
             return null;
         }
 
+        // untuk pengecekan memory (kondisi memori awall)
         runtime.gc();
         beforeMemory = runtime.totalMemory() - runtime.freeMemory();
+
+        // deklarasi queue
         PriorityQueue<Node> queue = new PriorityQueue<>();
         queue.add(new Node(start, null, 0, calculateHeuristic(start, end)));
 
+        // untuk menyimpan text yang pernah dikunjungi
         Map<String, Integer> visited = new HashMap<>();
         visited.put(start, 0);
 
@@ -37,12 +43,17 @@ public class AStarSolver {
             Node current = queue.poll();
             visitedNodesCount++;
             if (current.word.equals(end)) {
+                // saat ketemu stop, dan hitung memory kondisi akhir
                 runtime.gc();
                 afterMemory = runtime.totalMemory() - runtime.freeMemory();
                 usedMemory = afterMemory - beforeMemory;
+
+                // return berupa list dari hasil construct ladder
                 return reconstructLadder(current);
             }
 
+            // pengecekan hasil neighbour jika memiliki cost lebih rendah atau blm pernah di
+            // cek maka masuk ke queue
             for (String neighbor : getNeighbors(current.word, wordList)) {
                 int newCost = current.cost + 1;
                 if (!visited.containsKey(neighbor) || newCost < visited.get(neighbor)) {
@@ -52,6 +63,8 @@ public class AStarSolver {
                 }
             }
         }
+
+        // hitung kondisi memory akhir (jika tidak ketemu solusi)
         runtime.gc();
         afterMemory = runtime.totalMemory() - runtime.freeMemory();
         usedMemory = afterMemory - beforeMemory;
@@ -61,6 +74,7 @@ public class AStarSolver {
     }
 
     private int calculateHeuristic(String word, String target) {
+        // hitung jml char yang beda
         int distance = 0;
         for (int i = 0; i < word.length(); i++) {
             if (word.charAt(i) != target.charAt(i)) {
@@ -71,6 +85,7 @@ public class AStarSolver {
     }
 
     private List<String> getNeighbors(String word, Set<String> wordList) {
+        // mencari semua list text yang beda 1 char dengan word saat itu
         List<String> neighbors = new ArrayList<>();
         char[] chars = word.toCharArray();
         for (int i = 0; i < word.length(); i++) {
@@ -90,6 +105,7 @@ public class AStarSolver {
     }
 
     private List<String> reconstructLadder(Node endNode) {
+        // membangun ladder dengan iterasi dari target manggil parent sampe ke start
         LinkedList<String> ladder = new LinkedList<>();
         for (Node current = endNode; current != null; current = current.parent) {
             ladder.addFirst(current.word);
@@ -115,14 +131,4 @@ public class AStarSolver {
             return Integer.compare(this.priority, other.priority);
         }
     }
-
-    // public static void main(String[] args) {
-    // Set<String> wordList = FileReader.readStringsFromFile("./words.txt");
-    // AStarSolver solver = new AStarSolver();
-    // List<String> ladder = solver.findShortestLadder("hello", "check", wordList);
-    // if (ladder != null) {
-    // System.out.println("Shortest ladder: " + ladder);
-    // System.out.println("Visited nodes count: " + solver.getVisitedNodesCount());
-    // }
-    // }
 }

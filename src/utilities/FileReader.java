@@ -21,6 +21,7 @@ public class FileReader {
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"))) {
             String line;
+            // pastikan lowercase semua dan uniq dimasukin ke set
             while ((line = br.readLine()) != null) {
                 String[] words = line.split("\\s+");
                 Arrays.stream(words)
