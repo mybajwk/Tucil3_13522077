@@ -23,7 +23,9 @@ public class FileReader {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] words = line.split("\\s+");
-                stringSet.addAll(Arrays.asList(words));
+                Arrays.stream(words)
+                        .map(String::toLowerCase)
+                        .forEach(stringSet::add);
             }
         } catch (IOException e) {
             e.printStackTrace();
