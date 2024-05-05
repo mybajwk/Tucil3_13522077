@@ -5,20 +5,28 @@ import java.util.*;
 public class AStarSolver {
 
     private int visitedNodesCount;
+    private long usedMemory;
 
     public int getVisitedNodesCount() {
         return visitedNodesCount;
     }
 
-    public List<String> findShortestLadder(String start, String end, Set<String> wordList) {
-        visitedNodesCount = 0;
+    public long getUsedMemory() {
+        return usedMemory;
+    }
 
+    public List<String> findShortestLadder(String start, String end, Set<String> wordList) {
+        visitedNodesCount = 1;
+        Runtime runtime = Runtime.getRuntime();
+        long beforeMemory, afterMemory;
         // Check
         if (!wordList.contains(start) || !wordList.contains(end)) {
             System.out.println("Start or end word is not in the word list.");
             return null;
         }
 
+        runtime.gc();
+        beforeMemory = runtime.totalMemory() - runtime.freeMemory();
         PriorityQueue<Node> queue = new PriorityQueue<>();
         queue.add(new Node(start, null, 0, calculateHeuristic(start, end)));
 
@@ -29,6 +37,9 @@ public class AStarSolver {
             Node current = queue.poll();
             visitedNodesCount++;
             if (current.word.equals(end)) {
+                runtime.gc();
+                afterMemory = runtime.totalMemory() - runtime.freeMemory();
+                usedMemory = afterMemory - beforeMemory;
                 return reconstructLadder(current);
             }
 
@@ -41,6 +52,9 @@ public class AStarSolver {
                 }
             }
         }
+        runtime.gc();
+        afterMemory = runtime.totalMemory() - runtime.freeMemory();
+        usedMemory = afterMemory - beforeMemory;
 
         System.out.println("No ladder found.");
         return null;

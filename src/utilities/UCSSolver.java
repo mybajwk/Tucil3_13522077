@@ -5,19 +5,29 @@ import java.util.*;
 public class UCSSolver {
 
     private int visitedNodesCount;
+    private long usedMemory;
 
     public int getVisitedNodesCount() {
         return visitedNodesCount;
     }
 
+    public long getUsedMemory() {
+        return usedMemory;
+    }
+
     public List<String> findShortestLadder(String start, String end, Set<String> wordList) {
-        visitedNodesCount = 0;
+        visitedNodesCount = 1;
+        usedMemory = 0;
+        Runtime runtime = Runtime.getRuntime();
+        long beforeMemory, afterMemory;
 
         if (!wordList.contains(start) || !wordList.contains(end)) {
             System.out.println("Start or end word is not in the word list.");
             return null;
         }
 
+        runtime.gc();
+        beforeMemory = runtime.totalMemory() - runtime.freeMemory();
         PriorityQueue<Node> queue = new PriorityQueue<>();
         queue.add(new Node(start, null, 0));
         Map<String, Integer> costs = new HashMap<>();
@@ -26,6 +36,9 @@ public class UCSSolver {
         while (!queue.isEmpty()) {
             Node current = queue.poll();
             if (current.word.equals(end)) {
+                runtime.gc();
+                afterMemory = runtime.totalMemory() - runtime.freeMemory();
+                usedMemory = afterMemory - beforeMemory;
                 return reconstructLadder(current);
             }
 
@@ -43,6 +56,9 @@ public class UCSSolver {
             }
         }
 
+        runtime.gc();
+        afterMemory = runtime.totalMemory() - runtime.freeMemory();
+        usedMemory = afterMemory - beforeMemory;
         System.out.println("No ladder found.");
         return null;
     }

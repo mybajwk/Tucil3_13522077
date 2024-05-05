@@ -19,7 +19,7 @@ public class StringInputGUI extends JFrame {
     private JTextPane resultArea;
 
     public StringInputGUI() {
-        setTitle("Words Ladder");
+        setTitle("Words Ladder Solver");
         setSize(500, 800);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new GridBagLayout());
@@ -39,7 +39,7 @@ public class StringInputGUI extends JFrame {
         addComponent(string2Label, 1, 0, 1);
         addComponent(string2Field, 1, 1, 1);
 
-        JLabel dropdownLabel = new JLabel("Select Option:");
+        JLabel dropdownLabel = new JLabel("Select Algorithm:");
         String[] options = { "UCS", "A*", "GBFS" };
         dropdown = new JComboBox<>(options);
         addComponent(dropdownLabel, 2, 0, 1);
@@ -81,8 +81,6 @@ public class StringInputGUI extends JFrame {
     }
 
     private void performSearch() {
-        Runtime runtime = Runtime.getRuntime();
-        long beforeMemory, afterMemory, usedMemory;
         String str1 = string1Field.getText().toLowerCase();
         String str2 = string2Field.getText().toLowerCase();
         String selectedOption = (String) dropdown.getSelectedItem();
@@ -100,50 +98,33 @@ public class StringInputGUI extends JFrame {
 
         switch (selectedOption) {
             case "UCS":
-                runtime.gc();
-                beforeMemory = runtime.totalMemory() - runtime.freeMemory();
 
                 UCSSolver ucsSolver = new UCSSolver();
                 ladder = ucsSolver.findShortestLadder(str1, str2, wordList);
 
-                runtime.gc();
-                afterMemory = runtime.totalMemory() - runtime.freeMemory();
-                usedMemory = afterMemory - beforeMemory;
-
                 endTime = System.nanoTime();
-                displayResults(ucsSolver.getVisitedNodesCount(), ladder, startTime, endTime, usedMemory);
+                displayResults(ucsSolver.getVisitedNodesCount(), ladder, startTime, endTime, ucsSolver.getUsedMemory());
                 break;
             case "A*":
-                runtime.gc();
-                beforeMemory = runtime.totalMemory() - runtime.freeMemory();
 
                 AStarSolver aStarSolver = new AStarSolver();
                 ladder = aStarSolver.findShortestLadder(str1, str2, wordList);
 
-                runtime.gc();
-                afterMemory = runtime.totalMemory() - runtime.freeMemory();
-                usedMemory = afterMemory - beforeMemory;
-
                 endTime = System.nanoTime();
-                displayResults(aStarSolver.getVisitedNodesCount(), ladder, startTime, endTime, usedMemory);
+                displayResults(aStarSolver.getVisitedNodesCount(), ladder, startTime, endTime, aStarSolver.getUsedMemory());
                 break;
             case "GBFS":
-                runtime.gc();
-                beforeMemory = runtime.totalMemory() - runtime.freeMemory();
-
+               
                 GBFSSolver gbfsSolver = new GBFSSolver();
                 ladder = gbfsSolver.findShortestLadder(str1, str2, wordList);
 
-                runtime.gc();
-                afterMemory = runtime.totalMemory() - runtime.freeMemory();
-                usedMemory = afterMemory - beforeMemory;
-
                 endTime = System.nanoTime();
-                displayResults(gbfsSolver.getVisitedNodesCount(), ladder, startTime, endTime, usedMemory);
+                displayResults(gbfsSolver.getVisitedNodesCount(), ladder, startTime, endTime, gbfsSolver.getUsedMemory());
                 break;
             default:
                 resultArea.setText("Please select a valid option.");
         }
+                        
     }
 
     private String formatWord(String word1, String word2) {

@@ -5,19 +5,29 @@ import java.util.*;
 public class GBFSSolver {
 
     private int visitedNodesCount;
+    private long usedMemory;
 
     public int getVisitedNodesCount() {
         return visitedNodesCount;
     }
 
+    public long getUsedMemory() {
+        return usedMemory;
+    }
+
     public List<String> findShortestLadder(String start, String end, Set<String> wordList) {
-        visitedNodesCount = 0;
+        visitedNodesCount = 1;
+        usedMemory = 0;
+        Runtime runtime = Runtime.getRuntime();
+        long beforeMemory, afterMemory;
 
         if (!wordList.contains(start) || !wordList.contains(end)) {
             System.out.println("Start or end word is not in the word list.");
             return null;
         }
 
+        runtime.gc();
+        beforeMemory = runtime.totalMemory() - runtime.freeMemory();
         PriorityQueue<Node> queue = new PriorityQueue<>();
         queue.add(new Node(start, null, calculateHeuristic(start, end)));
 
@@ -29,6 +39,9 @@ public class GBFSSolver {
             visitedNodesCount++;
 
             if (current.word.equals(end)) {
+                runtime.gc();
+                afterMemory = runtime.totalMemory() - runtime.freeMemory();
+                usedMemory = afterMemory - beforeMemory;
                 return reconstructLadder(current);
             }
 
@@ -39,7 +52,9 @@ public class GBFSSolver {
                 }
             }
         }
-
+        runtime.gc();
+        afterMemory = runtime.totalMemory() - runtime.freeMemory();
+        usedMemory = afterMemory - beforeMemory;
         System.out.println("No ladder found.");
         return null;
     }
@@ -99,12 +114,12 @@ public class GBFSSolver {
     }
 
     // public static void main(String[] args) {
-    //     Set<String> wordList = FileReader.readStringsFromFile("./words.txt");
-    //     GBFSSolver solver = new GBFSSolver();
-    //     List<String> ladder = solver.findShortestLadder("hello", "check", wordList);
-    //     if (ladder != null) {
-    //         System.out.println("Shortest ladder: " + ladder);
-    //         System.out.println("Visited nodes count: " + solver.getVisitedNodesCount());
-    //     }
+    // Set<String> wordList = FileReader.readStringsFromFile("./words.txt");
+    // GBFSSolver solver = new GBFSSolver();
+    // List<String> ladder = solver.findShortestLadder("hello", "check", wordList);
+    // if (ladder != null) {
+    // System.out.println("Shortest ladder: " + ladder);
+    // System.out.println("Visited nodes count: " + solver.getVisitedNodesCount());
+    // }
     // }
 }
