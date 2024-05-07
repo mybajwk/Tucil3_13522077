@@ -66,6 +66,8 @@ To use this program, follow these steps:
 
 5. **Use the program:** Enter start word and end word (must be the same length). Choose the preferred search algorithm. Enjoy the result!
 
+NOTE: DONT FORGET TO CHANGE END OF LINE SEQUENCE of FILE run.sh and compile.sh to LF format
+
 ## Creator
 
 This project is part of the assignments for the Algorithm Strategy course at Institut Teknologi Bandung (ITB).
